@@ -1,9 +1,9 @@
 {
-	"id": "hide-excluded-files-in-quick-switcher",
-	"name": "Hide Excluded Files in Quick Switcher",
-	"version": "1.0.0",
+	"id": "hide-excluded-files-more",
+	"name": "Hide Excluded Files MORE",
+	"version": "0.1.0",
 	"minAppVersion": "1.0.0",
-	"description": "Hide Excluded Files in Quick Switcher.",
+	"description": "Hide excluded files from Quick Switcher and link suggestions.",
 	"author": "RyomaY",
 	"authorUrl": "https://github.com/ryoma-yama",
 	"isDesktopOnly": false

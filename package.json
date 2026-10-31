@@ -1,7 +1,7 @@
 {
-	"name": "obsidian-sample-plugin",
-	"version": "1.0.0",
-	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+	"name": "hide-excluded-files-more",
+	"version": "0.1.0",
+	"description": "Hide excluded files from Quick Switcher and link suggestions in Obsidian.",
 	"main": "main.js",
 	"type": "module",
 	"scripts": {
