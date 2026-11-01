@@ -4,9 +4,7 @@ type UnknownRecord = Record<string, unknown>;
 type UnknownMethod = (this: unknown, ...args: unknown[]) => unknown;
 
 function asRecord(value: unknown): UnknownRecord | null {
-	return value !== null && typeof value === 'object'
-		? (value as UnknownRecord)
-		: null;
+	return value !== null && typeof value === 'object' ? (value as UnknownRecord) : null;
 }
 
 function getFilePath(candidate: unknown): string | null {
@@ -31,10 +29,7 @@ function getFilePath(candidate: unknown): string | null {
 	return null;
 }
 
-function filterResult(
-	result: unknown,
-	isUserIgnored: (path: string) => boolean,
-): unknown {
+function filterResult(result: unknown, isUserIgnored: (path: string) => boolean): unknown {
 	const filter = (items: unknown[]) =>
 		items.filter((item) => {
 			const path = getFilePath(item);
@@ -59,10 +54,7 @@ function patchArrayMethod(
 	const original = target[methodName];
 	if (typeof original !== 'function') return false;
 
-	const wrapped: UnknownMethod = function (
-		this: unknown,
-		...args: unknown[]
-	) {
+	const wrapped: UnknownMethod = function (this: unknown, ...args: unknown[]) {
 		const result = (original as UnknownMethod).apply(this, args);
 		return filterResult(result, isUserIgnored);
 	};
@@ -86,11 +78,11 @@ function findLinkSuggest(app: App): UnknownRecord | null {
 	if (!Array.isArray(suggests)) return null;
 
 	return (
-		suggests.find((suggest) => {
+		(suggests.find((suggest) => {
 			const manager = asRecord(asRecord(suggest)?.suggestManager);
 			return typeof manager?.getSuggestionsAsync === 'function';
-		}) as UnknownRecord | undefined
-	) ?? null;
+		}) as UnknownRecord | undefined) ?? null
+	);
 }
 
 export function registerExcludedFileFilters(app: App, plugin: Plugin): void {
@@ -102,30 +94,20 @@ export function registerExcludedFileFilters(app: App, plugin: Plugin): void {
 	}
 
 	const isUserIgnored = (path: string) =>
-		(isUserIgnoredMethod as (path: string) => boolean).call(
-			metadataCache,
-			path,
-		);
+		(isUserIgnoredMethod as (path: string) => boolean).call(metadataCache, path);
 	const restores: (() => void)[] = [];
 
-	const internalPlugins = asRecord(
-		(app as unknown as UnknownRecord).internalPlugins,
-	);
+	const internalPlugins = asRecord((app as unknown as UnknownRecord).internalPlugins);
 	const getEnabledPluginById = internalPlugins?.getEnabledPluginById;
 	let quickSwitcherPatched = false;
 	if (typeof getEnabledPluginById === 'function') {
 		const switcher = asRecord(
-			(getEnabledPluginById as UnknownMethod).call(
-				internalPlugins,
-				'switcher',
-			),
+			(getEnabledPluginById as UnknownMethod).call(internalPlugins, 'switcher'),
 		);
 		const quickSwitcherModal = switcher?.QuickSwitcherModal;
 		const prototype =
 			typeof quickSwitcherModal === 'function'
-				? asRecord(
-					(quickSwitcherModal as { prototype?: unknown }).prototype,
-				)
+				? asRecord((quickSwitcherModal as { prototype?: unknown }).prototype)
 				: null;
 		if (prototype) {
 			quickSwitcherPatched = patchArrayMethod(
@@ -171,11 +153,7 @@ export function registerExcludedFileFilters(app: App, plugin: Plugin): void {
 		isUserIgnored,
 		restores,
 	);
-	if (
-		!quickSwitcherPatched ||
-		!linkSuggestPatched ||
-		!linkSuggestionIndexPatched
-	) {
+	if (!quickSwitcherPatched || !linkSuggestPatched || !linkSuggestionIndexPatched) {
 		new Notice(
 			'Could not connect to all suggestion providers. Obsidian may have changed its internals.',
 		);
